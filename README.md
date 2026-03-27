@@ -9,6 +9,7 @@ Both synchronous and fully asynchronous modes are supported out of the box.
 ## Table of Contents
 
 - [Why Scrawlee](#why-scrawlee)
+- [Why Scrawlee over other libraries?](#why-scrawlee-over-other-libraries)
 - [How It Works](#how-it-works)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -39,6 +40,7 @@ Both synchronous and fully asynchronous modes are supported out of the box.
   - [High-Volume Async Scraper with Proxies](#high-volume-async-scraper-with-proxies)
   - [Resuming an Authenticated Session](#resuming-an-authenticated-session)
 - [API Reference](#api-reference)
+- [Coming Soon](#coming-soon)
 - [License](#license)
 
 ---
@@ -55,6 +57,29 @@ On top of stealth, Scrawlee handles the tedious scaffolding every scraping proje
 - Proxy rotation so a single IP is never hammered
 - Response parsing built into the response object so you never `import BeautifulSoup` or `import json` manually
 - Cookie save/load so you only solve challenges or log in once
+
+---
+
+## Why Scrawlee over other libraries?
+
+In the Python scraping ecosystem, you usually have to choose between **low-level HTTP clients** (which are fast but easily blocked) and **browser-based tools** (which are slow but bypass blocks). 
+
+Scrawlee sits in the "Sweet Spot" — it is as fast as a raw HTTP request but as stealthy as a real browser.
+
+### vs. `requests` and `httpx`
+Standard HTTP libraries are the "gold standard" for simple APIs, but they fail almost immediately against modern anti-bot systems like Cloudflare, Akamai, or DataDome.
+*   **The Problem**: These libraries send a generic Python TLS signature (JA3 fingerprint) that is trivially identified and blocked by firewalls.
+*   **The Scrawlee Advantage**: Scrawlee uses sophisticated TLS impersonation to send byte-accurate handshakes that match Chrome, Edge, and Safari. To a server, Scrawlee is indistinguishable from a real user.
+
+### vs. `Playwright` and `Selenium`
+Browser automation is powerful but carries massive overhead. Running 100 concurrent browsers requires an expensive server and consumes gigabytes of RAM.
+*   **The Problem**: Headless browsers are slow, "leaky" (they have distinct JavaScript properties that reveal they are bots), and require a heavy installation.
+*   **The Scrawlee Advantage**: Scrawlee is a **lean, raw HTTP client**. It is 10-50x faster, uses a fraction of the memory, and doesn't require a browser engine. It bypasses most bot detection by winning at the network layer.
+
+### vs. raw `curl_cffi`
+`curl_cffi` is an excellent engine, but it is just an engine. It doesn't handle the "logic" of a production-grade scraping project.
+*   **The Problem**: Using raw `curl_cffi` means you have to write your own proxy rotation, retry logic, exponential backoff systems, and parser integrations from scratch.
+*   **The Scrawlee Advantage**: Scrawlee is **batteries-included**. It adds a high-level `ProxyManager` with automatic failure quarantine, a smart `response.auto` parser, and a unified Sync/Async API so you can focus on data, not infrastructure.
 
 ---
 
@@ -842,5 +867,11 @@ class ProxyManager:
     def get_proxy(self) -> dict | None: ...
     def mark_failed(self, proxy_dict: dict) -> None: ...
 ```
+
+---
+
+## Coming Soon 🚀
+
+Scrawlee is evolving! I'll soon be adding browser automation powered by **Botasaurus**, the most robust anti-bot and CAPTCHA-bypassing browser automation framework. I'll be further enhancing it to create **Scrawleemation** — a high-level powerhouse designed to make browser-based scraping as effortless and stealthy as possible.
 
 ---
